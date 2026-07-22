@@ -1,0 +1,45 @@
+name: OMRXWARE Auto Updater
+
+on:
+  schedule:
+    - cron: '*/5 * * * *'
+  workflow_dispatch:   
+
+permissions:
+  contents: write      
+
+jobs:
+  check-and-update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Run Updater Script
+        run: node update.js
+
+      - name: Stage generated files
+        run: git add devast-original.js devast-modded.js
+
+      - name: Check if files changed
+        id: changes
+        run: |
+          if git diff --quiet --staged; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and Push (if changed)
+        if: steps.changes.outputs.changed == 'true'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git commit -m "Auto-update: New Devast.io client version detected"
+          git push
