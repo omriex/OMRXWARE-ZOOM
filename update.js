@@ -35,25 +35,6 @@ async function runUpdater() {
 `;
         jsCode = zoomBypass + '\n' + jsCode;
 
-        try {
-            const myScript = fs.readFileSync('omrxware.js', 'utf8');
-            const b64 = Buffer.from(myScript).toString('base64');
-            jsCode += '\n;\n' + `
-setTimeout(function() {
-    try {
-        var s = document.createElement('script');
-        s.innerHTML = decodeURIComponent(escape(atob('${b64}')));
-        document.body.appendChild(s);
-        console.log('[OMRXWARE] Injected!');
-    } catch(e) { console.error('Injection error:', e); }
-}, 1000);
-`;
-            console.log('[INJ] omrxware.js injected');
-        } catch(e) {
-            console.error('Could not find omrxware.js.');
-            process.exit(1);
-        }
-
         fs.writeFileSync('devast-modded.js', jsCode);
         console.log('\n✓ devast-modded.js ready');
         console.log('Resource Override pattern: *://devast.io/js/*.js*');
