@@ -1,4 +1,4 @@
-name: OMRXWARE Auto Updater
+name: OMRXWARE-ZOOM Auto Updater
 
 on:
   schedule:
